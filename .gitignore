@@ -1,0 +1,15 @@
+# office lock files
+~$*
+
+# output / local
+tree.xlsx
+*.local.xlsx
+.env
+.env.*
+*.pat
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/

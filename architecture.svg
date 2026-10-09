@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0969da"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/>
+    </marker>
+    <style>
+      .title    { font-size:22px; font-weight:700; fill:#111; }
+      .panel    { font-size:16px; font-weight:700; fill:#111; }
+      .box      { fill:#f6f8fa; stroke:#555; stroke-width:1.5; }
+      .boxlbl   { font-size:13px; fill:#111; }
+      .ext      { fill:#eef5ff; stroke:#0969da; stroke-width:1.5; }
+      .store    { fill:#eafbea; stroke:#1a7f37; stroke-width:1.5; }
+      .user     { fill:#fff3cd; stroke:#9a6700; stroke-width:1.5; }
+      .edge     { stroke:#333; stroke-width:1.5; fill:none; }
+      .edgeblue { stroke:#0969da; stroke-width:1.5; fill:none; }
+      .edgegrn  { stroke:#1a7f37; stroke-width:1.5; fill:none; }
+      .lbl      { font-size:12px; fill:#333; }
+      .small    { font-size:11px; fill:#555; }
+      .mono     { font-family: Consolas, monospace; font-size:11px; fill:#111; }
+      .depbox   { fill:#fffbea; stroke:#9a6700; stroke-width:1.5; }
+    </style>
+  </defs>
+
+  <text x="700" y="34" text-anchor="middle" class="title">Export-AzDoTree.ps1 — architectuur, dataflow &amp; dependencies</text>
+
+  <!-- ===================== LEFT: ARCHITECTURE ===================== -->
+  <text x="40" y="78" class="panel">1. Architectuur</text>
+  <rect x="30" y="90" width="640" height="580" fill="#fcfcfd" stroke="#ddd"/>
+
+  <!-- user -->
+  <rect x="60" y="110" width="140" height="46" rx="6" class="user"/>
+  <text x="130" y="138" text-anchor="middle" class="boxlbl">User / CI</text>
+
+  <!-- params -->
+  <rect x="60" y="190" width="200" height="70" rx="6" class="box"/>
+  <text x="160" y="212" text-anchor="middle" class="boxlbl">Parameters</text>
+  <text x="160" y="230" text-anchor="middle" class="small">Org · Project</text>
+  <text x="160" y="246" text-anchor="middle" class="small">WIQL | RootIds · Fields</text>
+
+  <!-- auth -->
+  <rect x="310" y="190" width="200" height="70" rx="6" class="box"/>
+  <text x="410" y="212" text-anchor="middle" class="boxlbl">Auth header</text>
+  <text x="410" y="230" text-anchor="middle" class="small">$env:AZDO_PAT</text>
+  <text x="410" y="246" text-anchor="middle" class="small">Basic base64(":PAT")</text>
+
+  <!-- http client w/ retry -->
+  <rect x="60" y="300" width="450" height="60" rx="6" class="box"/>
+  <text x="285" y="322" text-anchor="middle" class="boxlbl">Invoke-AzDo (HTTP + retry 429/5xx)</text>
+  <text x="285" y="340" text-anchor="middle" class="small">respect Retry-After · exp backoff · max 5 tries</text>
+
+  <!-- wiql / roots -->
+  <rect x="60" y="390" width="200" height="60" rx="6" class="box"/>
+  <text x="160" y="412" text-anchor="middle" class="boxlbl">WIQL / RootIds</text>
+  <text x="160" y="430" text-anchor="middle" class="small">roots → HashSet[int]</text>
+
+  <!-- recursive expand -->
+  <rect x="310" y="390" width="200" height="60" rx="6" class="box"/>
+  <text x="410" y="412" text-anchor="middle" class="boxlbl">Recursive expand</text>
+  <text x="410" y="430" text-anchor="middle" class="small">GET /workitems/{id}?$expand=Relations</text>
+
+  <!-- bulk fetch -->
+  <rect x="60" y="480" width="450" height="60" rx="6" class="box"/>
+  <text x="285" y="502" text-anchor="middle" class="boxlbl">Bulk field fetch — POST /workitemsbatch</text>
+  <text x="285" y="520" text-anchor="middle" class="small">chunks van 200 ids · fields whitelist</text>
+
+  <!-- flatten -->
+  <rect x="60" y="570" width="220" height="60" rx="6" class="box"/>
+  <text x="170" y="592" text-anchor="middle" class="boxlbl">Flatten + indent + sort</text>
+  <text x="170" y="610" text-anchor="middle" class="small">Level · ParentId · preorder</text>
+
+  <!-- export -->
+  <rect x="310" y="570" width="200" height="60" rx="6" class="store"/>
+  <text x="410" y="592" text-anchor="middle" class="boxlbl">Export-Excel</text>
+  <text x="410" y="610" text-anchor="middle" class="small">AutoFilter · FreezeTopRow</text>
+
+  <!-- external AzDO -->
+  <rect x="540" y="300" width="110" height="150" rx="6" class="ext"/>
+  <text x="595" y="330" text-anchor="middle" class="boxlbl">Azure</text>
+  <text x="595" y="348" text-anchor="middle" class="boxlbl">DevOps</text>
+  <text x="595" y="366" text-anchor="middle" class="boxlbl">REST API</text>
+  <text x="595" y="390" text-anchor="middle" class="small">/wiql</text>
+  <text x="595" y="406" text-anchor="middle" class="small">/workitems</text>
+  <text x="595" y="422" text-anchor="middle" class="small">/workitemsbatch</text>
+
+  <!-- out file -->
+  <rect x="540" y="570" width="110" height="60" rx="6" class="store"/>
+  <text x="595" y="595" text-anchor="middle" class="boxlbl">tree.xlsx</text>
+  <text x="595" y="612" text-anchor="middle" class="small">on disk</text>
+
+  <!-- arrows: user -> params -->
+  <path d="M130,156 L130,190" class="edge" marker-end="url(#arrow)"/>
+  <!-- params -> auth -->
+  <path d="M260,225 L310,225" class="edge" marker-end="url(#arrow)"/>
+  <!-- auth -> http -->
+  <path d="M410,260 L410,300" class="edge" marker-end="url(#arrow)"/>
+  <!-- params -> http -->
+  <path d="M160,260 L160,300" class="edge" marker-end="url(#arrow)"/>
+  <!-- http -> wiql -->
+  <path d="M160,360 L160,390" class="edge" marker-end="url(#arrow)"/>
+  <!-- http -> expand -->
+  <path d="M410,360 L410,390" class="edge" marker-end="url(#arrow)"/>
+  <!-- wiql -> expand -->
+  <path d="M260,420 L310,420" class="edge" marker-end="url(#arrow)"/>
+  <!-- expand -> bulk -->
+  <path d="M410,450 L410,480" class="edge" marker-end="url(#arrow)"/>
+  <!-- wiql -> bulk (ids-only path) -->
+  <path d="M160,450 L160,480" class="edge" marker-end="url(#arrow)"/>
+  <!-- bulk -> flatten -->
+  <path d="M170,540 L170,570" class="edge" marker-end="url(#arrow)"/>
+  <!-- flatten -> export -->
+  <path d="M280,600 L310,600" class="edge" marker-end="url(#arrow)"/>
+  <!-- http <-> AzDO -->
+  <path d="M510,330 L540,330" class="edgeblue" marker-end="url(#arrow-blue)"/>
+  <path d="M540,350 L510,350" class="edgeblue" marker-end="url(#arrow-blue)"/>
+  <!-- export -> file -->
+  <path d="M510,600 L540,600" class="edgegrn" marker-end="url(#arrow-green)"/>
+
+  <!-- ===================== RIGHT TOP: DATAFLOW ===================== -->
+  <text x="710" y="78" class="panel">2. Dataflow (sequence)</text>
+  <rect x="700" y="90" width="680" height="440" fill="#fcfcfd" stroke="#ddd"/>
+
+  <!-- lanes -->
+  <text x="750"  y="120" class="small" font-weight="700">User</text>
+  <text x="920"  y="120" class="small" font-weight="700">Script</text>
+  <text x="1150" y="120" class="small" font-weight="700">AzDO REST</text>
+  <text x="1320" y="120" class="small" font-weight="700">Disk</text>
+
+  <!-- lane lines -->
+  <line x1="770"  y1="130" x2="770"  y2="510" stroke="#bbb" stroke-dasharray="4 3"/>
+  <line x1="940"  y1="130" x2="940"  y2="510" stroke="#bbb" stroke-dasharray="4 3"/>
+  <line x1="1170" y1="130" x2="1170" y2="510" stroke="#bbb" stroke-dasharray="4 3"/>
+  <line x1="1340" y1="130" x2="1340" y2="510" stroke="#bbb" stroke-dasharray="4 3"/>
+
+  <!-- steps -->
+  <g>
+    <!-- 1. params -->
+    <text x="710" y="160" class="mono">1</text>
+    <path d="M775,158 L935,158" class="edge" marker-end="url(#arrow)"/>
+    <text x="855" y="152" text-anchor="middle" class="small">params + PAT</text>
+
+    <!-- 2. WIQL -->
+    <text x="710" y="200" class="mono">2</text>
+    <path d="M945,198 L1165,198" class="edgeblue" marker-end="url(#arrow-blue)"/>
+    <text x="1055" y="192" text-anchor="middle" class="small">POST /wit/wiql</text>
+    <path d="M1165,218 L945,218" class="edgeblue" marker-end="url(#arrow-blue)"/>
+    <text x="1055" y="234" text-anchor="middle" class="small">roots: [id, id, ...]</text>
+
+    <!-- 3. expand loop -->
+    <text x="710" y="270" class="mono">3</text>
+    <path d="M945,268 L1165,268" class="edgeblue" marker-end="url(#arrow-blue)"/>
+    <text x="1055" y="262" text-anchor="middle" class="small">GET /workitems/{id}?$expand=Relations</text>
+    <path d="M1165,288 L945,288" class="edgeblue" marker-end="url(#arrow-blue)"/>
+    <text x="1055" y="304" text-anchor="middle" class="small">children-ids per parent (loop ≤ MaxDepth)</text>
+
+    <!-- 4. batch -->
+    <text x="710" y="340" class="mono">4</text>
+    <path d="M945,338 L1165,338" class="edgeblue" marker-end="url(#arrow-blue)"/>
+    <text x="1055" y="332" text-anchor="middle" class="small">POST /workitemsbatch (200 ids)</text>
+    <path d="M1165,358 L945,358" class="edgeblue" marker-end="url(#arrow-blue)"/>
+    <text x="1055" y="374" text-anchor="middle" class="small">fields map { id → fields }</text>
+
+    <!-- 5. flatten in script -->
+    <text x="710" y="410" class="mono">5</text>
+    <rect x="890" y="395" width="100" height="30" rx="4" class="box"/>
+    <text x="940" y="415" text-anchor="middle" class="small">flatten + sort</text>
+
+    <!-- 6. export -->
+    <text x="710" y="460" class="mono">6</text>
+    <path d="M945,458 L1335,458" class="edgegrn" marker-end="url(#arrow-green)"/>
+    <text x="1140" y="452" text-anchor="middle" class="small">Export-Excel → tree.xlsx</text>
+  </g>
+
+  <!-- ===================== RIGHT BOTTOM: DEPENDENCIES ===================== -->
+  <text x="710" y="565" class="panel">3. Dependencies</text>
+  <rect x="700" y="580" width="680" height="300" fill="#fffdf5" stroke="#ddd"/>
+
+  <!-- runtime -->
+  <rect x="720" y="600" width="200" height="110" rx="6" class="depbox"/>
+  <text x="820" y="622" text-anchor="middle" class="boxlbl">Runtime</text>
+  <text x="820" y="644" text-anchor="middle" class="small">PowerShell 5.1+</text>
+  <text x="820" y="662" text-anchor="middle" class="small">(7.x aanbevolen)</text>
+  <text x="820" y="684" text-anchor="middle" class="small">.NET-TLS 1.2+</text>
+
+  <!-- module -->
+  <rect x="940" y="600" width="200" height="110" rx="6" class="depbox"/>
+  <text x="1040" y="622" text-anchor="middle" class="boxlbl">PS Module</text>
+  <text x="1040" y="644" text-anchor="middle" class="mono">ImportExcel</text>
+  <text x="1040" y="664" text-anchor="middle" class="small">Install-Module ImportExcel</text>
+  <text x="1040" y="680" text-anchor="middle" class="small">-Scope CurrentUser</text>
+
+  <!-- auth -->
+  <rect x="1160" y="600" width="200" height="110" rx="6" class="depbox"/>
+  <text x="1260" y="622" text-anchor="middle" class="boxlbl">AzDO PAT</text>
+  <text x="1260" y="644" text-anchor="middle" class="small">scope: Work Items (Read)</text>
+  <text x="1260" y="664" text-anchor="middle" class="small">in env var:</text>
+  <text x="1260" y="684" text-anchor="middle" class="mono">$env:AZDO_PAT</text>
+
+  <!-- network -->
+  <rect x="720" y="730" width="200" height="110" rx="6" class="depbox"/>
+  <text x="820" y="752" text-anchor="middle" class="boxlbl">Netwerk</text>
+  <text x="820" y="774" text-anchor="middle" class="small">dev.azure.com :443</text>
+  <text x="820" y="792" text-anchor="middle" class="small">(of on-prem AzDO host)</text>
+  <text x="820" y="812" text-anchor="middle" class="small">proxy? HTTPS_PROXY</text>
+
+  <!-- api -->
+  <rect x="940" y="730" width="200" height="110" rx="6" class="depbox"/>
+  <text x="1040" y="752" text-anchor="middle" class="boxlbl">REST API</text>
+  <text x="1040" y="774" text-anchor="middle" class="mono">api-version=7.1</text>
+  <text x="1040" y="792" text-anchor="middle" class="small">endpoints: wiql,</text>
+  <text x="1040" y="810" text-anchor="middle" class="small">workitems, workitemsbatch</text>
+
+  <!-- permissions -->
+  <rect x="1160" y="730" width="200" height="110" rx="6" class="depbox"/>
+  <text x="1260" y="752" text-anchor="middle" class="boxlbl">Project-rechten</text>
+  <text x="1260" y="774" text-anchor="middle" class="small">View work items</text>
+  <text x="1260" y="792" text-anchor="middle" class="small">in nodes (area path)</text>
+  <text x="1260" y="810" text-anchor="middle" class="small">voor alle roots</text>
+</svg>
